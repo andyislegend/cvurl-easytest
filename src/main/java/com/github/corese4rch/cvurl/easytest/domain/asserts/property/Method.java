@@ -3,8 +3,6 @@ package com.github.corese4rch.cvurl.easytest.domain.asserts.property;
 import com.github.corese4rch.cvurl.easytest.domain.EasyRequest;
 import coresearch.cvurl.io.constant.HttpMethod;
 
-import java.util.function.Predicate;
-
 public class Method extends RequestProperty<HttpMethod> {
 
     @Override
@@ -13,7 +11,7 @@ public class Method extends RequestProperty<HttpMethod> {
     }
 
     @Override
-    protected Predicate<EasyRequest> getPredicate(Predicate<HttpMethod> propertyPredicate) {
-        return request -> propertyPredicate.test(request.getHttpMethod());
+    protected HttpMethod mapProperty(EasyRequest request) {
+        return request.getHttpMethod();
     }
 }

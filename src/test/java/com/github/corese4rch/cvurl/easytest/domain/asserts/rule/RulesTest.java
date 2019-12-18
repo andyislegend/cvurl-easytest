@@ -18,8 +18,8 @@ public class RulesTest {
             "false, false, false"})
     public void andTest(Boolean rule1Result, Boolean rule2Result, Boolean result) {
         //given
-        var rule1 = Rule.of(it -> rule1Result, "rule1");
-        var rule2 = Rule.of(it -> rule2Result, "rule2");
+        var rule1 = Rules.of(it -> rule1Result, "rule1");
+        var rule2 = Rules.of(it -> rule2Result, "rule2");
 
         //when
         var andRule = Rules.and(rule1, rule2);
@@ -37,8 +37,8 @@ public class RulesTest {
             "false, false, false"})
     public void orTest(Boolean rule1Result, Boolean rule2Result, Boolean result) {
         //given
-        var rule1 = Rule.of(it -> rule1Result, "rule1");
-        var rule2 = Rule.of(it -> rule2Result, "rule2");
+        var rule1 = Rules.of(it -> rule1Result, "rule1");
+        var rule2 = Rules.of(it -> rule2Result, "rule2");
 
         //when
         var orRule = Rules.or(rule1, rule2);
@@ -99,6 +99,16 @@ public class RulesTest {
     }
 
     @Test
+    public void matchesTest() {
+        //when
+        var matchesRule = Rules.matches(".{1}World.{1}");
+
+        //then
+        assertThat(matchesRule.isValid("!World!"));
+        assertThat(matchesRule.isNotValid("!World!!"));
+    }
+
+    @Test
     public void containsKeyTest() {
         //when
         var containsKeyRule = Rules.containsKey("key");
@@ -111,12 +121,12 @@ public class RulesTest {
     @Test
     public void containsKeyWithValueTest() {
         //when
-        var containsKeyRule = Rules.containsKeyWithValue("key", "value");
+        var containsKeyWithValueRule = Rules.containsKeyWithValue("key", "value");
 
         //then
-        assertThat(containsKeyRule.isValid(Map.of("key", "value"))).isTrue();
-        assertThat(containsKeyRule.isNotValid(Map.of("key2", "value"))).isTrue();
-        assertThat(containsKeyRule.isNotValid(Map.of("key", "value2"))).isTrue();
+        assertThat(containsKeyWithValueRule.isValid(Map.of("key", "value"))).isTrue();
+        assertThat(containsKeyWithValueRule.isNotValid(Map.of("key2", "value"))).isTrue();
+        assertThat(containsKeyWithValueRule.isNotValid(Map.of("key", "value2"))).isTrue();
     }
 
     @Test
@@ -179,6 +189,20 @@ public class RulesTest {
         //then
         assertThat(noneRule.isValid(0));
         assertThat(noneRule.isNotValid(1));
+    }
+
+    @Test
+    public void negateTest() {
+        //given
+        Rule<String> testRule = Rules.of(str -> str.equals("test"), "rule");
+
+        //when
+        Rule<String> negateRule = Rules.negate(testRule);
+
+        //then
+        assertThat(negateRule.isValid("not-test")).isTrue();
+        assertThat(negateRule.isNotValid("test")).isTrue();
+        assertThat(negateRule.getDescription()).isEqualTo("not rule");
     }
 
 }

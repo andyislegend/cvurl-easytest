@@ -75,7 +75,7 @@ public class MockRequestBuilderFactory {
         });
 
         when(builder.body(any(byte[].class))).thenAnswer(inv -> {
-            request.setBody(inv.getArgument(0));
+            request.setBody(new String(inv.getArgument(0, byte[].class)));
             return builder;
         });
 

@@ -1,17 +1,11 @@
 package com.github.corese4rch.cvurl.easytest.domain.asserts.rule;
 
-import java.util.function.Predicate;
+public abstract class Rule<T> {
+    public abstract boolean isValid(T obj);
 
-public interface Rule<T> {
-    boolean isValid(T obj);
+    public abstract String getDescription();
 
-    default boolean isNotValid(T obj) {
+    public final boolean isNotValid(T obj) {
         return !isValid(obj);
-    }
-
-    String getDescription();
-
-    static <T> RuleImpl<T> of(Predicate<T> predicate, String description) {
-        return new RuleImpl<>(predicate, description);
     }
 }

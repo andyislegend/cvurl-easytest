@@ -1,8 +1,12 @@
 package com.github.corese4rch.cvurl.easytest.domain;
 
+import com.github.corese4rch.cvurl.easytest.domain.asserts.rule.Rule;
+import com.github.corese4rch.cvurl.easytest.domain.asserts.rule.Rules;
 import com.github.corese4rch.cvurl.easytest.domain.utils.User;
 import coresearch.cvurl.io.constant.HttpMethod;
 import coresearch.cvurl.io.internal.configuration.RequestConfiguration;
+import coresearch.cvurl.io.multipart.MultipartBody;
+import coresearch.cvurl.io.multipart.Part;
 import coresearch.cvurl.io.request.Request;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -15,28 +19,14 @@ import java.util.Map;
 import static com.github.corese4rch.cvurl.easytest.domain.asserts.CVurlAssert.assertThat;
 import static com.github.corese4rch.cvurl.easytest.domain.asserts.property.RequestProperties.*;
 import static com.github.corese4rch.cvurl.easytest.domain.asserts.rule.Rules.*;
+import static com.github.corese4rch.cvurl.easytest.domain.utils.Urls.TEST_URL;
+import static com.github.corese4rch.cvurl.easytest.domain.utils.User.hasName;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 class EasyCVurlTest {
 
-    private static final String TEST_URL = "http://test.com";
-
     private EasyCVurl cVurl = new EasyCVurl();
-
-    @Test
-    public void cVurlWithPredefinedResponseTest() {
-        //given
-        var user = new User("Test");
-        var mockRequest = Mockito.mock(Request.class);
-        when(mockRequest.asObject(User.class)).thenReturn(user);
-
-        //when
-        var resultUser = new EasyCVurl(mockRequest).get(TEST_URL).asObject(User.class);
-
-        //then
-        assertThat(resultUser).isEqualTo(user);
-    }
 
     @Test
     public void getTest() throws MalformedURLException {
@@ -121,12 +111,128 @@ class EasyCVurlTest {
         assertThat(cVurl).hasRequests(eq(1), and(
                 headers().is(containsKeyWithValue("header", "headerVal")),
                 params().is(containsKeyWithValue("param", "paramVal")),
-                configuration().is(
-                        conf -> conf.getRequestTimeout().orElseThrow().equals(timeout),
-                        "request timeout should be " + timeout),
+                configuration().is(hasTimeout(timeout)),
                 configuration().is(RequestConfiguration::isAcceptCompressed,
                         "should accept compressed"),
                 configuration().is(RequestConfiguration::isLogEnabled,
                         "log should be enabled")));
     }
+
+    @Test
+    public void requestBuildingWithHeaderTest() {
+        //when
+        cVurl.get(TEST_URL)
+                .header("header", "headerVal")
+                .asString();
+
+        //then
+        assertThat(cVurl).hasRequests(eq(1),
+                headers().is(containsKeyWithValue("header", "headerVal")));
+    }
+
+    @Test
+    public void requestBuildingWithParamTest() {
+        //when
+        cVurl.get(TEST_URL)
+                .queryParam("param", "paramVal")
+                .asString();
+
+        //then
+        assertThat(cVurl).hasRequests(eq(1),
+                params().is(containsKeyWithValue("param", "paramVal")));
+    }
+
+    @Test
+    public void requestBuildingWithTimeoutTest() {
+        //given
+        Duration timeout = Duration.ofSeconds(1);
+
+        //when
+        cVurl.get(TEST_URL)
+                .timeout(timeout)
+                .asString();
+
+        //then
+        assertThat(cVurl).hasRequests(eq(1),
+                configuration().is(hasTimeout(timeout)));
+    }
+
+    @Test
+    public void requestBuildingWithStringBodyTest() {
+        //given
+        String body = "body";
+
+        //when
+        cVurl.post(TEST_URL)
+                .body(body)
+                .asString();
+
+        //then
+        assertThat(cVurl).hasRequests(eq(1), body().is(equal(body)));
+    }
+
+    @Test
+    public void requestBuildingWithBytesBodyTest() {
+        //given
+        String body = "body";
+
+        //when
+        cVurl.post(TEST_URL)
+                .body(body.getBytes())
+                .asString();
+
+        //then
+        assertThat(cVurl).hasRequests(eq(1), body().is(equal(body)));
+    }
+
+    @Test
+    public void requestBuildingWithObjectBodyTest() {
+        //given
+        User body = new User("username");
+
+        //when
+        cVurl.post(TEST_URL)
+                .body(body)
+                .asString();
+
+        //then
+        assertThat(cVurl).hasRequests(eq(1),
+                body(User.class).is(hasName(body.getName())));
+    }
+
+    @Test
+    public void requestBuildingWithMultipartBodyTest() {
+        //given
+        MultipartBody body = MultipartBody.create("sep").part(Part.of("body"));
+
+
+        //when
+        cVurl.post(TEST_URL)
+                .body(body)
+                .asString();
+
+        //then
+        assertThat(cVurl).hasRequests(eq(1),
+                body().is(equal("--sep\r\n\r\nbody\r\n--sep--")));
+    }
+
+    @Test
+    public void cVurlWithPredefinedResponseTest() {
+        //given
+        var user = new User("Test");
+        var mockRequest = Mockito.mock(Request.class);
+        when(mockRequest.asObject(User.class)).thenReturn(user);
+
+        //when
+        var resultUser = new EasyCVurl(mockRequest).get(TEST_URL).asObject(User.class);
+
+        //then
+        assertThat(resultUser).isEqualTo(user);
+    }
+
+    public Rule<RequestConfiguration> hasTimeout(Duration timeout) {
+        return Rules.of(conf -> conf.getRequestTimeout().orElseThrow().equals(timeout),
+                "request timeout should be " + timeout);
+    }
+
 }

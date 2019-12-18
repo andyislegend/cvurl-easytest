@@ -4,7 +4,7 @@ import lombok.Getter;
 
 import java.util.function.Predicate;
 
-public class RuleImpl<T> implements Rule<T> {
+public class RuleImpl<T> extends Rule<T> {
 
     @Getter
     private final String description;

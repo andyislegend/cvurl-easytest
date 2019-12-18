@@ -2,8 +2,6 @@ package com.github.corese4rch.cvurl.easytest.domain.asserts.property;
 
 import com.github.corese4rch.cvurl.easytest.domain.EasyRequest;
 
-import java.util.function.Predicate;
-
 public class Url extends RequestProperty<String> {
 
     @Override
@@ -12,7 +10,7 @@ public class Url extends RequestProperty<String> {
     }
 
     @Override
-    protected Predicate<EasyRequest> getPredicate(Predicate<String> propertyPredicate) {
-        return request -> propertyPredicate.test(request.getUrl());
+    protected String mapProperty(EasyRequest request) {
+        return request.getUrl();
     }
 }

@@ -3,7 +3,7 @@ package com.github.corese4rch.cvurl.easytest.domain.asserts.rule;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class ComplexRule<T> implements Rule<T> {
+public abstract class ComplexRule<T> extends Rule<T> {
 
     protected final List<Rule<T>> rules;
 
@@ -19,5 +19,4 @@ public abstract class ComplexRule<T> implements Rule<T> {
     }
 
     protected abstract String getSeparator();
-
 }

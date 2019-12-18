@@ -2,6 +2,7 @@ package com.github.corese4rch.cvurl.easytest.domain.asserts.property;
 
 import com.github.corese4rch.cvurl.easytest.domain.EasyRequest;
 import com.github.corese4rch.cvurl.easytest.domain.asserts.rule.Rule;
+import com.github.corese4rch.cvurl.easytest.domain.asserts.rule.Rules;
 
 import java.util.function.Predicate;
 
@@ -15,24 +16,27 @@ import static java.lang.String.format;
 public abstract class RequestProperty<T> {
     public static final String DESCRIPTION_TEMPLATE = "%s should [%s]";
 
-    public Rule<EasyRequest> is(Rule<T> propertyPredicate) {
-        return is(propertyPredicate::isValid, propertyPredicate.getDescription());
+    public Rule<EasyRequest> is(Rule<T> propertyRule) {
+        return Rules.of(propertyRule, this::mapProperty);
     }
 
     public Rule<EasyRequest> is(Predicate<T> predicate, String description) {
-        return Rule.of(getPredicate(predicate),
-                format(DESCRIPTION_TEMPLATE, getName(), description));
+        return Rules.of(getPredicate(predicate), format(DESCRIPTION_TEMPLATE, getName(), description));
     }
 
-    public Rule<EasyRequest> isNot(Rule<T> propertyPredicate) {
-        return isNot(propertyPredicate::isValid, propertyPredicate.getDescription());
+    public Rule<EasyRequest> isNot(Rule<T> propertyRule) {
+        return Rules.negate(Rules.of(propertyRule, this::mapProperty));
     }
 
     public Rule<EasyRequest> isNot(Predicate<T> predicate, String description) {
         return is(predicate.negate(), description);
     }
 
+    private Predicate<EasyRequest> getPredicate(Predicate<T> propertyPredicate) {
+        return request -> propertyPredicate.test(mapProperty(request));
+    }
+
     protected abstract String getName();
 
-    protected abstract Predicate<EasyRequest> getPredicate(Predicate<T> propertyPredicate);
+    protected abstract T mapProperty(EasyRequest request);
 }

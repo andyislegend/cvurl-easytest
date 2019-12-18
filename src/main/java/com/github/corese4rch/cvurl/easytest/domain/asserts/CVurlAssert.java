@@ -14,7 +14,7 @@ public class CVurlAssert extends AbstractAssert<CVurlAssert, EasyCVurl> {
             "Expected number of requests that passes rules <%s> to be <%s>, actual <%s>";
 
     private static final Rule<EasyRequest> IS_EXECUTED_PREDICATE =
-            Rule.of(r -> r.getTimesExecuted() > 0, "executed");
+            Rules.of(r -> r.getTimesExecuted() > 0, "executed");
 
     private final int actualNumOfRequests;
 
@@ -29,10 +29,8 @@ public class CVurlAssert extends AbstractAssert<CVurlAssert, EasyCVurl> {
 
     public CVurlAssert hasRequests(Rule<Integer> requestsNumRule) {
         if (requestsNumRule.isNotValid(actualNumOfRequests)) {
-            failWithMessage(REQUEST_NUMBER_ERROR, "created",
-                    requestsNumRule.getDescription(), actualNumOfRequests);
+            failWithMessage(REQUEST_NUMBER_ERROR, "created", requestsNumRule.getDescription(), actualNumOfRequests);
         }
-
         return this;
     }
 
@@ -53,6 +51,7 @@ public class CVurlAssert extends AbstractAssert<CVurlAssert, EasyCVurl> {
         if (requestsNumRule.isNotValid(actualNum)) {
             failWithMessage(REQUEST_NUMBER_ERROR, rule.getDescription(), requestsNumRule.getDescription(), actualNum);
         }
+
         return this;
     }
 

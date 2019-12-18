@@ -10,7 +10,7 @@ public class OrRule<T> extends ComplexRule<T> {
 
     @Override
     public boolean isValid(T obj) {
-        for (var rule : rules) {
+        for (Rule<T> rule : rules) {
             if (rule.isValid(obj)) {
                 return true;
             }

@@ -2,17 +2,31 @@ package com.github.corese4rch.cvurl.easytest.domain.asserts.rule;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
-import static com.github.corese4rch.cvurl.easytest.domain.asserts.rule.Rule.of;
 import static java.lang.String.format;
 
 public class Rules {
+
+    public static <T> Rule<T> of(Predicate<T> predicate, String description) {
+        return new RuleImpl<>(predicate, description);
+    }
+
+    public static <T, R> Rule<T> of(Rule<R> rule, Function<T, R> objMapper) {
+        return new DelegatorRule<>(rule, objMapper);
+    }
+
+    public static <T> Rule<T> negate(Rule<T> rule) {
+        return new NegatedRule<>(rule);
+    }
 
     @SafeVarargs
     public static <T> Rule<T> and(Rule<T>... rules) {
         return new AndRule<>(List.of(rules));
     }
 
+    @SafeVarargs
     public static <T> Rule<T> or(Rule<T>... rules) {
         return new OrRule<>(List.of(rules));
     }
@@ -37,6 +51,10 @@ public class Rules {
         return of(actual -> actual.endsWith(expected), "ends with " + expected);
     }
 
+    public static Rule<String> matches(String regex) {
+        return of(actual -> actual.matches(regex), "matches " + regex);
+    }
+
     public static Rule<Map<String, String>> containsKey(String key) {
         return of(actual -> actual.containsKey(key), "contains key " + key);
     }
@@ -44,7 +62,7 @@ public class Rules {
     public static Rule<Map<String, String>> containsKeyWithValue(String key, String value) {
         return of(actual -> {
             String actualValue = actual.get(key);
-            return actualValue != null && actualValue.equals(actualValue);
+            return actualValue != null && actualValue.equals(value);
         }, format("contains key %s with value %s", key, value));
     }
 

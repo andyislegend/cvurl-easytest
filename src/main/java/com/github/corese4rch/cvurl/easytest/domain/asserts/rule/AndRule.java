@@ -11,7 +11,7 @@ public class AndRule<T> extends ComplexRule<T> {
     @Override
     public boolean isValid(T obj) {
         for (var rule : rules) {
-            if (!rule.isValid(obj)) {
+            if (rule.isNotValid(obj)) {
                 return false;
             }
         }

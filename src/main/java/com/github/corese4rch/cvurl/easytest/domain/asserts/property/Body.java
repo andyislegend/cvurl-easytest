@@ -3,7 +3,6 @@ package com.github.corese4rch.cvurl.easytest.domain.asserts.property;
 import com.github.corese4rch.cvurl.easytest.domain.EasyRequest;
 
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 public class Body<T> extends RequestProperty<T> {
 
@@ -19,7 +18,7 @@ public class Body<T> extends RequestProperty<T> {
     }
 
     @Override
-    protected Predicate<EasyRequest> getPredicate(Predicate<T> propertyPredicate) {
-        return request -> propertyPredicate.test(bodyMapper.apply(request.getBody()));
+    protected T mapProperty(EasyRequest request) {
+        return bodyMapper.apply(request.getBody());
     }
 }

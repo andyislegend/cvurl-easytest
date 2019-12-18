@@ -2,7 +2,6 @@ package com.github.corese4rch.cvurl.easytest.domain;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.corese4rch.cvurl.easytest.domain.asserts.rule.RuleImpl;
 import com.github.corese4rch.cvurl.easytest.domain.utils.User;
 import org.junit.jupiter.api.Test;
 
@@ -11,13 +10,12 @@ import java.util.function.Predicate;
 import static com.github.corese4rch.cvurl.easytest.domain.asserts.CVurlAssert.assertThat;
 import static com.github.corese4rch.cvurl.easytest.domain.asserts.property.RequestProperties.body;
 import static com.github.corese4rch.cvurl.easytest.domain.asserts.property.RequestProperties.params;
-import static com.github.corese4rch.cvurl.easytest.domain.asserts.rule.Rule.of;
 import static com.github.corese4rch.cvurl.easytest.domain.asserts.rule.Rules.*;
+import static com.github.corese4rch.cvurl.easytest.domain.utils.Urls.TEST_URL;
+import static com.github.corese4rch.cvurl.easytest.domain.utils.User.hasName;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class CVurlAssertTest {
-
-    public static final String TEST_URL = "test.url";
 
     private EasyCVurl cVurl = new EasyCVurl();
 
@@ -64,7 +62,7 @@ public class CVurlAssertTest {
         cVurl.post(TEST_URL).body(user).asString();
 
         //then
-        assertThat(cVurl).hasRequests(eq(1), body(User.class).is(nameEquals("Test")));
+        assertThat(cVurl).hasRequests(eq(1), body(User.class).is(hasName("Test")));
     }
 
     @Test
@@ -77,7 +75,7 @@ public class CVurlAssertTest {
 
         //then
         assertThrows(AssertionError.class, () ->
-                assertThat(cVurl).hasRequests(eq(1), body(User.class).is(nameEquals("NotTest"))));
+                assertThat(cVurl).hasRequests(eq(1), body(User.class).is(hasName("NotTest"))));
     }
 
     @Test
@@ -100,11 +98,6 @@ public class CVurlAssertTest {
         assertThat(cVurl).hasExecutedRequests(eq(1), params().is(containsKey("key")));
     }
 
-
-    private RuleImpl<User> nameEquals(String name) {
-        return of(user -> user.getName().equals(name), "name should be " + name);
-    }
-
     private EasyRequest getEasyRequest(String body) {
         try {
             return new ObjectMapper().readValue(body, EasyRequest.class);
@@ -117,6 +110,4 @@ public class CVurlAssertTest {
     public Predicate<EasyRequest> predicate() {
         return r -> r.getTimesExecuted() > 3;
     }
-
-
 }
