@@ -7,7 +7,7 @@ import java.time.Duration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class MutableRequestConfigurationTest {
+public class MutableRequestConfigurationTest {
 
     @Test
     public void getRequestTimeoutTest() {

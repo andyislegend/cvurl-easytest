@@ -25,7 +25,7 @@ import static com.github.corese4rch.cvurl.easytest.utils.User.hasName;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-class EasyCVurlTest {
+public class EasyCVurlTest {
 
     private EasyCVurl cVurl = new EasyCVurl();
 
