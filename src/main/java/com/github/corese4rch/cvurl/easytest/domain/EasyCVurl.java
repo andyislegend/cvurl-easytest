@@ -1,6 +1,7 @@
 package com.github.corese4rch.cvurl.easytest.domain;
 
 import coresearch.cvurl.io.constant.HttpMethod;
+import coresearch.cvurl.io.model.Configuration;
 import coresearch.cvurl.io.request.CVurl;
 import coresearch.cvurl.io.request.Request;
 import coresearch.cvurl.io.request.RequestBuilder;
@@ -20,6 +21,11 @@ public class EasyCVurl extends CVurl {
     }
 
     public EasyCVurl() {
+        this.mockRequest = Mockito.mock(Request.class);
+    }
+
+    public EasyCVurl(Configuration configuration) {
+        super(configuration);
         this.mockRequest = Mockito.mock(Request.class);
     }
 
