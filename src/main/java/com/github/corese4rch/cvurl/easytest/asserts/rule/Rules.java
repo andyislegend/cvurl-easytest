@@ -2,6 +2,7 @@ package com.github.corese4rch.cvurl.easytest.asserts.rule;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -13,8 +14,8 @@ public class Rules {
         return new RuleImpl<>(predicate, description);
     }
 
-    public static <T, R> Rule<T> of(Rule<R> rule, Function<T, R> objMapper) {
-        return new DelegatorRule<>(rule, objMapper);
+    public static <T, R> Rule<T> of(Rule<R> rule, Function<T, R> objMapper, String descriptionPrefix) {
+        return new DelegatorRule<>(rule, objMapper, descriptionPrefix);
     }
 
     public static <T> Rule<T> negate(Rule<T> rule) {
@@ -32,42 +33,42 @@ public class Rules {
     }
 
     public static <T> Rule<T> equal(T expected) {
-        return of(actual -> actual.equals(expected), "equals to " + expected);
+        return of(actual -> Objects.equals(actual, expected), "equals to " + expected);
     }
 
     public static <T> Rule<T> notEqual(T expected) {
-        return of(actual -> !actual.equals(expected), "not equals to " + expected);
+        return of(actual -> !Objects.equals(actual, expected), "not equals to " + expected);
     }
 
     public static Rule<String> contains(String expected) {
-        return of(actual -> actual.contains(expected), "contains " + expected);
+        return of(actual -> actual != null && actual.contains(expected), "contains " + expected);
     }
 
     public static Rule<String> startsWith(String expected) {
-        return of(actual -> actual.startsWith(expected), "starts with " + expected);
+        return of(actual -> actual != null && actual.startsWith(expected), "starts with " + expected);
     }
 
     public static Rule<String> endsWith(String expected) {
-        return of(actual -> actual.endsWith(expected), "ends with " + expected);
+        return of(actual -> actual != null && actual.endsWith(expected), "ends with " + expected);
     }
 
     public static Rule<String> matches(String regex) {
-        return of(actual -> actual.matches(regex), "matches " + regex);
+        return of(actual -> actual != null && actual.matches(regex), "matches " + regex);
     }
 
     public static Rule<Map<String, String>> containsKey(String key) {
-        return of(actual -> actual.containsKey(key), "contains key " + key);
+        return of(actual -> actual != null && actual.containsKey(key), "contains key " + key);
     }
 
     public static Rule<Map<String, String>> containsKeyWithValue(String key, String value) {
         return of(actual -> {
-            String actualValue = actual.get(key);
+            String actualValue = actual != null ? actual.get(key) : null;
             return actualValue != null && actualValue.equals(value);
         }, format("contains key %s with value %s", key, value));
     }
 
     public static Rule<Integer> eq(Integer expectedNum) {
-        return of(actualNum -> actualNum.equals(expectedNum), "equal to " + expectedNum);
+        return of(actualNum -> Objects.equals(actualNum, expectedNum), "equal to " + expectedNum);
     }
 
     public static Rule<Integer> gt(Integer expectedNum) {
@@ -87,6 +88,6 @@ public class Rules {
     }
 
     public static Rule<Integer> none() {
-        return of(actualNum -> actualNum == 0, "none");
+        return of(actualNum -> Objects.equals(actualNum, 0), "none");
     }
 }

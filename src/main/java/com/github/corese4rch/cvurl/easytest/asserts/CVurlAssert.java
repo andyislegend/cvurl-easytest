@@ -11,7 +11,9 @@ import java.util.stream.Stream;
 public class CVurlAssert extends AbstractAssert<CVurlAssert, EasyCVurl> {
 
     private static final String REQUEST_NUMBER_ERROR =
-            "Expected number of requests that passes rules <%s> to be <%s>, actual <%s>";
+            "Expected number of valid requests to be <%s>, actual <%s>";
+
+    private static final String REQUEST_NUMBER_WITH_RULE_ERROR = REQUEST_NUMBER_ERROR + "\nRule: <%s>";
 
     private static final Rule<EasyRequest> IS_EXECUTED_PREDICATE =
             Rules.of(r -> r.getTimesExecuted() > 0, "executed");
@@ -29,7 +31,7 @@ public class CVurlAssert extends AbstractAssert<CVurlAssert, EasyCVurl> {
 
     public CVurlAssert hasRequests(Rule<Integer> requestsNumRule) {
         if (requestsNumRule.isNotValid(actualNumOfRequests)) {
-            failWithMessage(REQUEST_NUMBER_ERROR, "created", requestsNumRule.getDescription(), actualNumOfRequests);
+            failWithMessage(REQUEST_NUMBER_ERROR, requestsNumRule.getDescription(), actualNumOfRequests);
         }
         return this;
     }
@@ -49,7 +51,7 @@ public class CVurlAssert extends AbstractAssert<CVurlAssert, EasyCVurl> {
     private CVurlAssert failIfNotValid(Rule<Integer> requestsNumRule, Rule<EasyRequest> rule) {
         int actualNum = (int) getRequestsThat(rule).count();
         if (requestsNumRule.isNotValid(actualNum)) {
-            failWithMessage(REQUEST_NUMBER_ERROR, rule.getDescription(), requestsNumRule.getDescription(), actualNum);
+            failWithMessage(REQUEST_NUMBER_WITH_RULE_ERROR, requestsNumRule.getDescription(), actualNum, rule.getDescription());
         }
 
         return this;
