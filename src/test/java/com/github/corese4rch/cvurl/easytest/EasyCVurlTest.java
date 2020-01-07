@@ -248,6 +248,27 @@ public class EasyCVurlTest {
         assertThat(easyCVurl.getConfiguration().getGenericMapper().writeValue(new Object())).isEqualTo("test");
     }
 
+    @Test
+    public void cVurlWithPredefinedResponseAndConfigurationTest() {
+        //given
+        var user = new User("Test");
+        var mockRequest = Mockito.mock(Request.class);
+        Configuration configuration = Configuration.builder()
+                .genericMapper(createTestGenericMapper("test"))
+                .build();
+
+        when(mockRequest.asObject(User.class)).thenReturn(user);
+
+        //when
+        EasyCVurl easyCVurl = new EasyCVurl(configuration, mockRequest);
+        var resultUser = easyCVurl.get(TEST_URL).asObject(User.class);
+
+        //then
+        assertThat(resultUser).isEqualTo(user);
+        assertThat(easyCVurl.getConfiguration().getGenericMapper().writeValue(new Object())).isEqualTo("test");
+    }
+
+
     private Rule<RequestConfiguration> hasTimeout(Duration timeout) {
         return Rules.of(conf -> conf.getRequestTimeout().orElseThrow().equals(timeout),
                 "request timeout should be " + timeout);

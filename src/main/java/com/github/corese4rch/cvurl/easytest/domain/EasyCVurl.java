@@ -29,6 +29,11 @@ public class EasyCVurl extends CVurl {
         this.mockRequest = Mockito.mock(Request.class);
     }
 
+    public EasyCVurl(Configuration configuration, Request mockRequest) {
+        super(configuration);
+        this.mockRequest = mockRequest;
+    }
+
     @Override
     public RequestBuilder<?> get(String url) {
         return MockRequestBuilderFactory
