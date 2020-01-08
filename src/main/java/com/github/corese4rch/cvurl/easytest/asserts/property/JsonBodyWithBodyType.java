@@ -13,7 +13,7 @@ public class JsonBodyWithBodyType<T> extends RequestProperty<T> {
 
     @Override
     protected String getName() {
-        return "body as " + type.getType().getTypeName();
+        return "body";
     }
 
     @Override

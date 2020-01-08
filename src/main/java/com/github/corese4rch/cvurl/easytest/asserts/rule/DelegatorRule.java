@@ -6,10 +6,12 @@ public class DelegatorRule<T, R> extends Rule<T> {
 
     private Rule<R> delegator;
     private Function<T, R> objMapper;
+    private String descriptionPrefix;
 
-    public DelegatorRule(Rule<R> delegator, Function<T, R> objMapper) {
+    public DelegatorRule(Rule<R> delegator, Function<T, R> objMapper, String descriptionPrefix) {
         this.delegator = delegator;
         this.objMapper = objMapper;
+        this.descriptionPrefix = descriptionPrefix;
     }
 
     @Override
@@ -19,6 +21,6 @@ public class DelegatorRule<T, R> extends Rule<T> {
 
     @Override
     public String getDescription() {
-        return delegator.getDescription();
+        return descriptionPrefix + delegator.getDescription();
     }
 }

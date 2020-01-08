@@ -19,6 +19,7 @@ public class Body<T> extends RequestProperty<T> {
 
     @Override
     protected T mapProperty(EasyRequest request) {
-        return bodyMapper.apply(request.getBody());
+        String body = request.getBody();
+        return body == null ? null : bodyMapper.apply(body);
     }
 }

@@ -8,15 +8,20 @@ import coresearch.cvurl.io.constant.HttpMethod;
 import coresearch.cvurl.io.internal.configuration.RequestConfiguration;
 import coresearch.cvurl.io.mapper.BodyType;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.time.Duration;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static com.github.corese4rch.cvurl.easytest.asserts.CVurlAssert.assertThat;
 import static com.github.corese4rch.cvurl.easytest.asserts.property.RequestProperties.*;
 import static com.github.corese4rch.cvurl.easytest.asserts.rule.Rules.*;
 import static com.github.corese4rch.cvurl.easytest.utils.Urls.TEST_URL;
 import static com.github.corese4rch.cvurl.easytest.utils.User.hasName;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class RequestPropertiesTest {
 
@@ -181,6 +186,34 @@ public class RequestPropertiesTest {
                 url().is(url -> url.equals(TEST_URL), "should be " + TEST_URL),
                 url().isNot(url -> url.equals("badUrl"), "should be badUrl")
         ));
+    }
+
+    @SuppressWarnings("unchecked")
+    @ParameterizedTest
+    @MethodSource("descriptionTestArguments")
+    public void descriptionTest(RequestProperty requestProperty, String propertyDescription) {
+        assertThat(requestProperty.is(equal("test")).getDescription())
+                .isEqualTo(propertyDescription + " equals to test");
+        assertThat(requestProperty.isNot(equal("test")).getDescription())
+                .isEqualTo(propertyDescription + " not equals to test");
+        assertThat(requestProperty.is(property -> true, "equals to test").getDescription())
+                .isEqualTo(propertyDescription + " equals to test");
+        assertThat(requestProperty.isNot(property -> true, "equals to test").getDescription())
+                .isEqualTo(propertyDescription + " not equals to test");
+    }
+
+    private static Stream<Arguments> descriptionTestArguments() {
+        return Stream.of(
+                Arguments.of(body(), "body"),
+                Arguments.of(body(str -> new Object()), "body"),
+                Arguments.of(body(Object.class), "body"),
+                Arguments.of(body(new BodyType<>() {
+                }), "body"),
+                Arguments.of(configuration(), "configuration"),
+                Arguments.of(headers(), "headers"),
+                Arguments.of(method(), "method"),
+                Arguments.of(params(), "params"),
+                Arguments.of(url(), "url"));
     }
 
     public Rule<RequestConfiguration> hasTimeout(Duration timeout) {

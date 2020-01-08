@@ -6,6 +6,9 @@ import com.github.corese4rch.cvurl.easytest.domain.EasyCVurl;
 import com.github.corese4rch.cvurl.easytest.utils.User;
 import coresearch.cvurl.io.constant.HttpMethod;
 import coresearch.cvurl.io.internal.configuration.RequestConfiguration;
+import coresearch.cvurl.io.mapper.BodyType;
+import coresearch.cvurl.io.mapper.GenericMapper;
+import coresearch.cvurl.io.model.Configuration;
 import coresearch.cvurl.io.multipart.MultipartBody;
 import coresearch.cvurl.io.multipart.Part;
 import coresearch.cvurl.io.request.Request;
@@ -231,9 +234,62 @@ public class EasyCVurlTest {
         assertThat(resultUser).isEqualTo(user);
     }
 
-    public Rule<RequestConfiguration> hasTimeout(Duration timeout) {
+    @Test
+    public void cVurlWithPredefinedConfigurationTest() {
+        //given
+        Configuration configuration = Configuration.builder()
+                .genericMapper(createTestGenericMapper("test"))
+                .build();
+
+        //when
+        EasyCVurl easyCVurl = new EasyCVurl(configuration);
+
+        //then
+        assertThat(easyCVurl.getConfiguration().getGenericMapper().writeValue(new Object())).isEqualTo("test");
+    }
+
+    @Test
+    public void cVurlWithPredefinedResponseAndConfigurationTest() {
+        //given
+        var user = new User("Test");
+        var mockRequest = Mockito.mock(Request.class);
+        Configuration configuration = Configuration.builder()
+                .genericMapper(createTestGenericMapper("test"))
+                .build();
+
+        when(mockRequest.asObject(User.class)).thenReturn(user);
+
+        //when
+        EasyCVurl easyCVurl = new EasyCVurl(configuration, mockRequest);
+        var resultUser = easyCVurl.get(TEST_URL).asObject(User.class);
+
+        //then
+        assertThat(resultUser).isEqualTo(user);
+        assertThat(easyCVurl.getConfiguration().getGenericMapper().writeValue(new Object())).isEqualTo("test");
+    }
+
+
+    private Rule<RequestConfiguration> hasTimeout(Duration timeout) {
         return Rules.of(conf -> conf.getRequestTimeout().orElseThrow().equals(timeout),
                 "request timeout should be " + timeout);
     }
 
+    private GenericMapper createTestGenericMapper(String writeReturnValue) {
+        return new GenericMapper() {
+            @Override
+            public <T> T readValue(String s, Class<T> aClass) {
+                return null;
+            }
+
+            @Override
+            public <T> T readValue(String s, BodyType<T> bodyType) {
+                return null;
+            }
+
+            @Override
+            public String writeValue(Object o) {
+                return writeReturnValue;
+            }
+        };
+    }
 }
