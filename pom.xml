@@ -6,12 +6,24 @@
 
     <groupId>com.github.corese4rch</groupId>
     <artifactId>cvurl-easytest</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
+
+    <name>cvurl-easytest</name>
+    <description>cvurl-easytest is easy way to test your http communication with cVurl
+    </description>
+    <url>https://github.com/corese4rch/cvurl-easytest</url>
+
+    <organization>
+        <name>corese4rch</name>
+        <url>https://github.com/corese4rch</url>
+    </organization>
 
     <properties>
         <jdk.version>11</jdk.version>
         <maven.compiler.source>${jdk.version}</maven.compiler.source>
         <maven.compiler.target>${jdk.version}</maven.compiler.target>
+        <maven.compiler.release>${jdk.version}</maven.compiler.release>
+        <maven.compiler.version>3.8.1</maven.compiler.version>
         <assertj.version>3.14.0</assertj.version>
         <lombok.version>1.18.8</lombok.version>
         <cvurl-io.version>1.3</cvurl-io.version>
@@ -69,7 +81,16 @@
     </dependencies>
 
     <build>
+        <finalName>cvurl-easytest-${project.version}</finalName>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.compiler.version}</version>
+                <configuration>
+                    <release>11</release>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -84,5 +105,56 @@
             </plugin>
         </plugins>
     </build>
+
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/corese4rch/cvurl-easytest/issues</url>
+    </issueManagement>
+
+    <licenses>
+        <license>
+            <name>GNU General Public License v3.0</name>
+            <distribution>repo</distribution>
+            <url>https://github.com/corese4rch/cvurl-easytest/blob/master/LICENSE</url>
+        </license>
+    </licenses>
+
+    <scm>
+        <url>http://github.com/corese4rch/cvurl-easytest/tree/master</url>
+        <connection>scm:git:git://github.com/corese4rch/cvurl-easytest.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/corese4rch/cvurl-easytest.git</developerConnection>
+    </scm>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
+    <developers>
+        <developer>
+            <id>0</id>
+            <name>Andrew Petryk</name>
+            <email>andrew.petryk@gmail.com</email>
+            <organization>Avenga</organization>
+            <roles>
+                <role>Product Owner</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>1</id>
+            <name>Yurii Kaplun</name>
+            <email>yurii.kaplun@avenga.com</email>
+            <organization>Avenga</organization>
+            <roles>
+                <role>Developer</role>
+            </roles>
+        </developer>
+    </developers>
 
 </project>
