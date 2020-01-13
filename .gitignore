@@ -38,8 +38,6 @@ buildNumber.properties
 
 .DS_Store
 .idea/
-.github
 /.idea/
 *.iml
 .idea/
-.github/
